@@ -1,0 +1,72 @@
+<form #vehicleform class="form mt20" [formGroup]="vehicleForm" (ngSubmit)="vehicleForm.valid && onSubmit(vehicleForm)">
+    <div class="flex-container">
+        <div class="left-container">
+            <p class="title">Información del vehículo</p>
+            <mat-form-field>
+                <input type="text"
+                       placeholder="Marca"
+                       matInput
+                       formControlName="marca"
+                       [matAutocomplete]="marcaauto"
+                       (input)="filterElement($event.target.value, 'marca')"
+                       (blur)="checkSelection('marca')">
+                <mat-autocomplete (optionSelected)="onMarcaSelection($event.option.value)" #marcaauto="matAutocomplete" [displayWith]="getOptionText">
+                  <mat-option *ngFor="let marca of filteredMarcas" [value]="marca">
+                    {{marca.desc}}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>
+                    <span *ngIf="vehicleForm?.controls.marca.errors?.required">Seleccione una marca.</span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Año</mat-label>
+                <input (dateChange)="onDateChange($event)" matInput [matDatepicker]="dpfecha" formControlName="fecha">
+                <mat-datepicker-toggle matSuffix [for]="dpfecha"></mat-datepicker-toggle>
+                <mat-datepicker #dpfecha></mat-datepicker>
+                <mat-error>
+                    <span *ngIf="vehicleForm?.controls.fecha?.errors?.required">Ingrese el año.</span>
+                    <span *ngIf="vehicleForm?.controls.fecha?.errors?.notAllowedAge">
+                        <span *ngIf="vehicleForm.controls.fecha.errors.notAllowedAge.requiredMaxAge">
+                            La fecha debe ser entre {{vehicleForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMinAge}} y {{vehicleForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMaxAge}} .
+                        </span>
+                    </span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <input type="text"
+                       placeholder="Modelo"
+                       matInput
+                       formControlName="modelo"
+                       [matAutocomplete]="modeloauto"
+                       (input)="filterElement($event.target.value, 'model')"
+                       (blur)="checkSelection('model')">
+                <mat-autocomplete (optionSelected)="onModelSelection($event.option.value)" #modeloauto="matAutocomplete">
+                  <mat-option *ngFor="let modelo of filteredModelos" [value]="modelo">
+                    {{modelo}}
+                  </mat-option>
+                </mat-autocomplete>
+                <mat-error>
+                    <span *ngIf="vehicleForm?.controls.modelo.errors?.required">Seleccione un modelo.</span>
+                </mat-error>
+            </mat-form-field>
+        
+            <mat-form-field>
+                <input type="text"
+                       placeholder="Versiones"
+                       matInput
+                       formControlName="version"
+                       [matAutocomplete]="versionauto"
+                       (input)="filterElement($event.target.value, 'version')"
+                       (blur)="checkSelection('version')">
+                <mat-autocomplete (optionSelected)="onVersionSelection($event.option.value)" #versionauto="matAutocomplete">
+                  <mat-option *ngFor="let version of filteredVersiones" [value]="version">
+                    {{version}}
+                  </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+    </div>
+</form>

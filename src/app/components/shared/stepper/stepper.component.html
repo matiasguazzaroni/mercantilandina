@@ -1,0 +1,6 @@
+<mat-horizontal-stepper linear #stepper>
+    <mat-step *ngFor="let step of steps;">
+        <ng-template matStepLabel>{{step.title}}</ng-template>
+        <ng-container #currentcomponent *ngComponentOutlet="step.component"></ng-container>
+    </mat-step>
+</mat-horizontal-stepper>

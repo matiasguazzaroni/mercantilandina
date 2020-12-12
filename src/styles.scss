@@ -1,1 +1,67 @@
-/* You can add global styles to this file, and also import other style files */
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$mercantilandina-primary: mat-palette($mat-indigo);
+$mercantilandina-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$mercantilandina-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$mercantilandina-theme: mat-light-theme($mercantilandina-primary, $mercantilandina-accent, $mercantilandina-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($mercantilandina-theme);
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.left-container, .right-container {
+    flex: 1 1;
+    padding:0 15px !important;
+}
+
+.buttons-container {
+    text-align: right;
+}
+
+.title {
+    font-weight: 500;
+    font-size: 17px;
+    color: #0074ad;
+}
+
+.mt20 {
+    margin-top: 20px !important;
+}
+
+.mt10 {
+    margin-top: 10px !important;
+}
+
+.pr15, .pl15 {
+    padding: 0 15px !important;
+}
+
+.form mat-form-field {
+    width: 100%;
+}

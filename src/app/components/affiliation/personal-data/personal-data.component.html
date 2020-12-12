@@ -1,0 +1,169 @@
+<form #personalform class="form mt20" [formGroup]="personalForm" (ngSubmit)="personalForm.valid && onSubmit(personalForm)">
+    <div class="flex-container">
+        <div class="left-container">
+            <p class="title">Información personal</p>
+            <mat-form-field>
+                <mat-label>Dni</mat-label>
+                <input matInput placeholder="Dni" formControlName="dni">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.dni?.errors?.required">Ingrese un dni.</span>
+                    <span *ngIf="personalForm?.controls.dni?.errors?.minlength">El tamaño mínmo es {{personalForm.controls.dni.errors.minlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.dni?.errors?.maxlength">El tamaño máximo es {{personalForm.controls.dni.errors.maxlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.dni?.errors?.notAllowedValue">Debe ingresar solo números.</span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Nombre</mat-label>
+                <input matInput placeholder="Nombre" formControlName="nombre">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.nombre?.errors?.required">Ingrese un nombre.</span>
+                    <span *ngIf="personalForm?.controls.nombre?.errors?.minlength">El tamaño mínmo es {{personalForm.controls.nombre.errors.minlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.nombre?.errors?.maxlength">El tamaño máximo es {{personalForm.controls.nombre.errors.maxlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.nombre?.errors?.notAllowedValue">Debe ingresar solo letras y no debe comenzar con espacio en blanco.</span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Apellido</mat-label>
+                <input matInput placeholder="Apellido" formControlName="apellido">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.apellido?.errors?.required">Ingrese un apellido.</span>
+                    <span *ngIf="personalForm?.controls.apellido?.errors?.minlength">El tamaño mínmo es {{personalForm.controls.apellido.errors.minlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.apellido?.errors?.maxlength">El tamaño máximo es {{personalForm.controls.apellido.errors.maxlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.apellido?.errors?.notAllowedValue">Debe ingresar solo letras y no debe comenzar con espacio en blanco.</span>
+                </mat-error>
+            </mat-form-field>
+                        
+            <mat-form-field>
+                <mat-label>Fecha de nacimiento</mat-label>
+                <input matInput [matDatepicker]="dpnacimiento" formControlName="fechaNacimiento">
+                <mat-datepicker-toggle matSuffix [for]="dpnacimiento"></mat-datepicker-toggle>
+                <mat-datepicker #dpnacimiento></mat-datepicker>
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.fechaNacimiento?.errors?.required">Ingrese su fecha de nacimiento.</span>
+                    <span *ngIf="personalForm?.controls.fechaNacimiento?.errors?.notAllowedAge">
+                        <span *ngIf="personalForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMaxAge; else onlyFirstAge">
+                            Debe tener entre {{personalForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMinAge}} y {{personalForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMaxAge}} años.
+                        </span>
+                        <ng-template #onlyFirstAge>Debe tener mínimo {{personalForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMinAge}} años.</ng-template>
+                    </span>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="right-container">
+            <p class="title">Dirección</p>
+            <div formGroupName="direccion">
+                <mat-form-field>
+                    <input type="text"
+                           placeholder="Provincia"
+                           matInput
+                           formControlName="provincia"
+                           [matAutocomplete]="provinciaauto"
+                           (input)="filterElement($event.target.value, 'provincia')"
+                           (blur)="checkSelection('province')">
+                    <mat-autocomplete (optionSelected)="onProvinceSelection($event.option.value)" #provinciaauto="matAutocomplete" [displayWith]="getOptionText">
+                      <mat-option *ngFor="let provincia of filteredProvincias" [value]="provincia">
+                        {{provincia.nombre}}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>
+                        <span *ngIf="personalForm?.controls.direccion.controls.provincia?.errors?.required">Ingrese una provincia.</span>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="filteredMunicipios.length; else ciudadInput">
+                    <input type="text"
+                           placeholder="Ciudad"
+                           matInput
+                           formControlName="ciudad"
+                           [matAutocomplete]="ciudadauto"
+                           (input)="filterElement($event.target.value, 'municipio')"
+                           (blur)="checkSelection('city')">
+                    <mat-autocomplete (optionSelected)="onCitySelection($event.option.value)" #ciudadauto="matAutocomplete" [displayWith]="getCityText">
+                      <mat-option *ngFor="let ciudad of filteredMunicipios" [value]="ciudad">
+                        {{ciudad.nombre}}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>
+                        <span *ngIf="personalForm?.controls.direccion.controls.ciudad?.errors?.required">Ingrese una ciudad.</span>
+                    </mat-error>
+                </mat-form-field>
+
+                <ng-template #ciudadInput>
+                    <mat-form-field >
+                        <mat-label>Ciudad</mat-label>
+                        <input (blur)="onCityFreeSelection($event.target.value)" matInput placeholder="Ciudad" formControlName="ciudad">
+                        <mat-error>
+                            <span *ngIf="personalForm?.controls.direccion.controls.ciudad?.errors?.required">Ingrese una ciudad.</span>
+                        </mat-error>
+                    </mat-form-field>
+                </ng-template>
+
+                <mat-form-field>
+                    <mat-label>Domicilio</mat-label>
+                    <input matInput placeholder="Domicilio" formControlName="domicilio">
+                    <mat-error>
+                        <span *ngIf="personalForm?.controls.direccion.controls.domicilio?.errors?.required">Ingrese un domicilio.</span>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+
+    <p class="title mt20 pr15 pl15">Contacto</p>
+    <div class="flex-container">
+        <div class="left-container">
+            <mat-form-field>
+                <mat-label>Celular</mat-label>
+                <input matInput placeholder="Celular" formControlName="celular">
+            </mat-form-field>
+            
+            <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput placeholder="Email" formControlName="email">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.nombre?.errors?.email">Ingrese un email válido.</span>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="right-container">
+            <mat-form-field>
+                <mat-label>Teléfono</mat-label>
+                <input matInput placeholder="Teléfono" formControlName="telefono">
+            </mat-form-field>
+        </div>
+    </div>
+
+    <p class="title mt20 pr15 pl15">Credenciales</p>
+    <div class="bottom-container flex-container">
+        <div class="left-container">
+            <mat-form-field>
+                <mat-label>Usuario</mat-label>
+                <input (input)="this.usernameCheck.next($event.target.value)" matInput placeholder="Usuario" formControlName="usuario">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.usuario?.errors?.required">Ingrese un usuario.</span>
+                    <span *ngIf="personalForm?.controls.usuario?.errors?.minlength">El tamaño mínmo es {{personalForm.controls.usuario.errors.minlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.usuario?.errors?.maxlength">El tamaño máximo es {{personalForm.controls.usuario.errors.maxlength.requiredLength}}.</span>
+                    <span *ngIf="personalForm?.controls.usuario?.errors?.notAllowed">El usuario está en uso.</span>
+                    <span *ngIf="personalForm?.controls.usuario?.errors?.notAllowedValue">No se permiten espacios.</span>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Contraseña</mat-label>
+                <input matInput placeholder="Contraseña" formControlName="password">
+                <mat-error>
+                    <span *ngIf="personalForm?.controls.password?.errors?.required">Ingrese una contraseña.</span>
+                    <span *ngIf="personalForm?.controls.password?.errors?.notAllowedPassword">Ingrese una contraseña más fuerte.</span>
+                    <span *ngIf="personalForm?.controls.password?.errors?.notAllowedValue">No se permiten espacios.</span>
+                </mat-error>
+            </mat-form-field>
+            <app-password-strength-meter [password]="personalForm.controls.password.value" (onScoreChange)="setScore($event)"></app-password-strength-meter>
+        </div>
+    </div>
+    <div class="buttons-container mt20">
+        <button [disabled]="personalForm.disabled" mat-flat-button type="submit" color="primary">Siguiente</button>
+    </div>
+</form>
