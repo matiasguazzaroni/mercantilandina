@@ -70,11 +70,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .buttons-container {
+    display: block;
     text-align: right;
 }
 
 .buttons-container>button {
-    margin-right: 20px;
+    margin-right: 15px;
 }
 
 .title {
@@ -129,6 +130,25 @@ mat-error div {
 
     .mat-step-label {
         display: none !important;
+    }
+
+    .buttons-container {
+        display: flex;
+        text-align: center;
+        margin-right: 0px;
+    }
+
+    .buttons-container button {
+        flex: 1 1 auto;
+    }
+
+    .buttons-container>button {
+        margin-right: 4px;
+    }
+    
+    .buttons-container:nth-child(2) {
+        margin-left: 4px;
+        margin-right: 0px;
     }
 }
 

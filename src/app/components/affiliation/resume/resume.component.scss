@@ -1,0 +1,11 @@
+.resumeHeight {
+    height: calc(100vh - 130px); 
+    overflow: auto;
+}
+
+@media(max-width: 883px) {
+    .resumeHeight {
+        height: auto;
+        overflow: unset;
+    }
+}
