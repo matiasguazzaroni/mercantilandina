@@ -118,13 +118,16 @@
             <mat-form-field>
                 <mat-label>Celular</mat-label>
                 <input autocomplete="new-cel" matInput placeholder="Celular" formControlName="celular">
+                <mat-error>
+                    <div *ngIf="personalForm?.controls.celular?.errors?.notAllowedValue">Ingrese un celular válido (solo números sin espacios y 7 dígitos mínimo).</div>
+                </mat-error>
             </mat-form-field>
             
             <mat-form-field>
                 <mat-label>Email</mat-label>
                 <input autocomplete="new-email" matInput placeholder="Email" formControlName="email">
                 <mat-error>
-                    <div *ngIf="personalForm?.controls.nombre?.errors?.email">Ingrese un email válido.</div>
+                    <div *ngIf="personalForm?.controls.email?.errors?.email">Ingrese un email válido.</div>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -133,6 +136,9 @@
             <mat-form-field>
                 <mat-label>Teléfono</mat-label>
                 <input autocomplete="new-tel" matInput placeholder="Teléfono" formControlName="telefono">
+                <mat-error>
+                    <div *ngIf="personalForm?.controls.telefono?.errors?.notAllowedValue">Ingrese un teléfono válido (solo números sin espacios y 7 dígitos mínimo).</div>
+                </mat-error>
             </mat-form-field>
         </div>
     </div>
@@ -142,7 +148,7 @@
         <div class="left-container">
             <mat-form-field>
                 <mat-label>Usuario</mat-label>
-                <input autocomplete="new-usernm" (input)="this.usernameCheck.next($event.target.value)" matInput placeholder="Usuario" formControlName="usuario">
+                <input autocomplete="new-usernm" #userInput (input)="this.usernameCheck.next($event.target.value)" matInput placeholder="Usuario" formControlName="usuario">
                 <mat-error>
                     <div *ngIf="personalForm?.controls.usuario?.errors?.required">Ingrese un usuario.</div>
                     <div *ngIf="personalForm?.controls.usuario?.errors?.minlength">El tamaño mínmo es {{personalForm.controls.usuario.errors.minlength.requiredLength}}.</div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-success',
@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SuccessComponent implements OnInit {
 
+  @Input() fireInit: boolean;
   constructor() { }
 
   ngOnInit(): void {
@@ -15,4 +16,5 @@ export class SuccessComponent implements OnInit {
   onVerProducto(): void {
     alert("REDIRECCIÓN A DETALLE DE PRODUCTO");
   }
+
 }

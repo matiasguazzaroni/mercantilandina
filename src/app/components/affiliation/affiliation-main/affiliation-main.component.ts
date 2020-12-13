@@ -16,19 +16,24 @@ export class AffiliationMainComponent implements OnInit {
 
   steps: Array<Step> = [{
     component: PersonalDataComponent,
-    title: 'Personal'
+    title: 'Personal',
+    completed: false
   }, {
     component: VehicleDataComponent,
-    title: 'Vehículo'
+    title: 'Vehículo',
+    completed: false
   }, {
     component: CoverageDataComponent,
-    title: 'Seguro'
+    title: 'Seguro',
+    completed: false
   }, {
     component: ResumeComponent,
-    title: 'Resumen'
+    title: 'Resumen',
+    completed: false
   }, {
     component: SuccessComponent,
-    title: 'Finalización'
+    title: 'Finalización',
+    completed: false
   }]
 
   @ViewChild('stepperwizard') stepperComponent: StepperComponent;

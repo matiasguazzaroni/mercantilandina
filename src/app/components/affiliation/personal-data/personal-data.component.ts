@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Input, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { regexValidator } from '../../../directives/validators/regexValidator';
@@ -14,6 +14,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UtilsfunctionsService } from 'src/app/services/utils/utilsfunctions.service';
 import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
+import { ShareService } from 'src/app/services/shareService/share-service.service';
+import * as moment from 'moment'
 
 @Component({
   selector: 'app-personal-data',
@@ -21,13 +23,18 @@ import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
   styleUrls: ['./personal-data.component.scss']
 })
 export class PersonalDataComponent implements OnInit {
-
+  
+  @Input('fireInit') fireInit: boolean;
   @Output('onNext') onNext = new EventEmitter(); 
+  @ViewChild('userInput') userInput: ElementRef;
+
   personalForm: FormGroup;
-  lettersRegex: RegExp = /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s ]*)$/;
-  dniRegex: RegExp = /^(\d{2}\.{1}\d{3}\.\d{3})|(\d{2}\s{1}\d{3}\s\d{3})$/;
-  noFirstBlankSpace: RegExp = /^\S.*$/;
-  noWhiteSpace = /^\S*$/;
+
+  dniRegex = this.utils.dniRegex;
+  lettersRegex = this.utils.lettersRegex;
+  noFirstBlankSpace = this.utils.noFirstBlankSpace;
+  noWhiteSpace = this.utils.noWhiteSpace;
+  numberRegex = this.utils.numberRegex;
 
   score: number = 0;
   provincias: Array<Province> = new Array();
@@ -47,33 +54,46 @@ export class PersonalDataComponent implements OnInit {
 
   static keyformstorage = 'personaldata';
 
-  constructor(private fb: FormBuilder, private georefService: GeorefService, private mocksService: MockmercantilService, private utils: UtilsfunctionsService) { }
+  constructor(private fb: FormBuilder, private georefService: GeorefService, private mocksService: MockmercantilService, private utils: UtilsfunctionsService, private shareService: ShareService) { }
 
   ngOnInit(): void {
+    
+    const form_info = this.shareService.getKeyData(PersonalDataComponent.keyformstorage);
+    const birthDate = this.utils.equalsDate(moment(form_info?.fechaNacimiento).toDate(), new Date()) ? '' : moment(form_info?.fechaNacimiento);
+
     this.personalForm = this.fb.group({
-      dni: ['', [Validators.required, Validators.maxLength(10), regexValidator(this.dniRegex)]],
-      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
-      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
-      email: ['', Validators.email],
-      celular: [''],
-      telefono: [''],
-      usuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), (control: AbstractControl) => notExistsValidator(this.userExists)(control), regexValidator(this.noWhiteSpace)]],
-      password: ['', [Validators.required, (control: AbstractControl) => passwordValidator(this.score, 60)(control), regexValidator(this.noWhiteSpace)]],
-      fechaNacimiento: ['', [Validators.required, ageValidator(18, 99)]],
+      dni: [form_info?.dni, [Validators.required, Validators.maxLength(10), regexValidator(this.dniRegex)]],
+      nombre: [form_info?.nombre, [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
+      apellido: [form_info?.apellido, [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
+      email: [form_info?.email, Validators.email],
+      celular: [(form_info?.celular) ? form_info.celular : '', [regexValidator(this.numberRegex)]],
+      telefono: [(form_info?.telefono) ? form_info.telefono : '', [regexValidator(this.numberRegex)]],
+      usuario: [form_info?.usuario, [Validators.required, Validators.minLength(3), Validators.maxLength(30), (control: AbstractControl) => notExistsValidator(this.userExists)(control), regexValidator(this.noWhiteSpace)]],
+      password: [form_info?.password, [Validators.required, (control: AbstractControl) => passwordValidator(this.score, 60)(control), regexValidator(this.noWhiteSpace)]],
+      fechaNacimiento: [birthDate, [Validators.required, ageValidator(18, 99)]],
       direccion: this.fb.group({
-        provincia: ['', Validators.required],
-        ciudad: [{value: '', disabled: true}, Validators.required],
-        domicilio: [{value: '', disabled: true}, Validators.required]
+        provincia: [form_info?.direccion.provincia, Validators.required],
+        ciudad: [{value: form_info?.direccion.ciudad, disabled: true}, Validators.required],
+        domicilio: [{value: form_info?.direccion.domicilio, disabled: true}, Validators.required]
       }),
     });
 
-    this.georefService.getProvincias().subscribe( (data: any) => {
-      this.provincias = data.provincias;
-      this.filteredProvincias = this.utils.sortArray(this.provincias, 'nombre');
-    })
+
+    if (form_info) {
+      this.onProvinceSelection(form_info.direccion.provincia);
+      this.onCitySelection(form_info.direccion.ciudad);
+      this.onCityFreeSelection(form_info.direccion.ciudad);
+    }
+
+    if (this.fireInit) {
+      this.georefService.getProvincias().subscribe( (data: any) => {
+        this.provincias = data.provincias;
+        this.filteredProvincias = this.utils.sortArray(this.provincias, 'nombre');
+      })
+    }
 
     this.usernameCheck.pipe(
-      debounceTime(400),
+      debounceTime(600),
       distinctUntilChanged())
       .subscribe(value => {
         this.personalForm.disable();
@@ -83,6 +103,7 @@ export class PersonalDataComponent implements OnInit {
             this.personalForm.get('usuario').updateValueAndValidity();
           }, 0);
           this.personalForm.enable();
+          this.userInput.nativeElement.focus();
         })
       })
   }

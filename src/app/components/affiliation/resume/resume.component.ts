@@ -16,7 +16,6 @@ export class ResumeComponent implements OnInit {
   constructor(private sharedService: ShareService) { }
 
   ngOnInit(): void {
-    console.log(this.sharedService.getData());
     this.resume_info = this.sharedService.getData();
   }
 
@@ -26,7 +25,7 @@ export class ResumeComponent implements OnInit {
 
   public onConfirm(): void {
     this.sharedService.clearData();
-    this.onNext.emit(true)
+    this.onNext.emit(null)
   }
 
 }

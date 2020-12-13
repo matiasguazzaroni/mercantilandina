@@ -1,72 +1,94 @@
-<form #vehicleform class="form mt20" [formGroup]="vehicleForm" (ngSubmit)="vehicleForm.valid && onSubmit(vehicleForm)">
-    <div class="flex-container">
-        <div class="left-container">
-            <p class="title">Información del vehículo</p>
-            <mat-form-field>
-                <input type="text"
-                       placeholder="Marca"
-                       matInput
-                       formControlName="marca"
-                       [matAutocomplete]="marcaauto"
-                       (input)="filterElement($event.target.value, 'marca')"
-                       (blur)="checkSelection($event.target.value, 'marca')">
-                <mat-autocomplete (optionSelected)="onMarcaSelection($event.option.value)" #marcaauto="matAutocomplete" [displayWith]="getOptionText">
-                  <mat-option *ngFor="let marca of filteredMarcas" [value]="marca">
-                    {{marca.desc}}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-error>
-                    <span *ngIf="vehicleForm?.controls.marca.errors?.required">Seleccione una marca.</span>
-                </mat-error>
-            </mat-form-field>
-
-            <mat-form-field>
-                <mat-label>Año</mat-label>
-                <mat-select (selectionChange)="onYearSelection($event)" formControlName="fecha">
-                  <mat-option *ngFor="let year of years" [value]="year">
-                    {{year}}
-                  </mat-option>
-                </mat-select>
-                <mat-error>
-                    <span *ngIf="vehicleForm?.controls.fecha.errors?.required">Seleccione un año.</span>
-                </mat-error>
-              </mat-form-field>
-
-            <mat-form-field>
-                <input type="text"
-                       placeholder="Modelo"
-                       matInput
-                       formControlName="modelo"
-                       [matAutocomplete]="modeloauto"
-                       (input)="filterElement($event.target.value, 'modelo')"
-                       (blur)="checkSelection($event.target.value, 'model')">
-                <mat-autocomplete (optionSelected)="onModelSelection($event.option.value)" #modeloauto="matAutocomplete">
-                  <mat-option *ngFor="let modelo of filteredModelos" [value]="modelo">
-                    {{modelo}}
-                  </mat-option>
-                </mat-autocomplete>
-                <mat-error>
-                    <span *ngIf="vehicleForm?.controls.modelo.errors?.required">Seleccione un modelo.</span>
-                </mat-error>
-            </mat-form-field>
-        
-            <mat-form-field>
-                <input type="text"
-                       placeholder="Version"
-                       matInput
-                       formControlName="version"
-                       [matAutocomplete]="versionauto"
-                       (input)="filterElement($event.target.value, 'version')">
-                <mat-autocomplete (optionSelected)="onVersionSelection($event.option.value)" #versionauto="matAutocomplete" [displayWith]="getVersionText">
-                  <mat-option *ngFor="let version of filteredVersiones" [value]="version">
-                    {{version.desc}}
-                  </mat-option>
-                </mat-autocomplete>
-            </mat-form-field>
+<div style="height: calc(100vh - 150px)">
+    <form #vehicleform class="form mt20" [formGroup]="vehicleForm" (ngSubmit)="vehicleForm.valid && onSubmit(vehicleForm)">
+        <div class="flex-container">
+            <div class="left-container">
+                <p class="title">Información del vehículo</p>
+                <mat-form-field>
+                    <input type="text"
+                           placeholder="Marca"
+                           matInput
+                           formControlName="marca"
+                           [matAutocomplete]="marcaauto"
+                           (input)="filterElement($event.target.value, 'marca')"
+                           (blur)="checkSelection($event.target.value, 'marca')">
+                    <mat-autocomplete (optionSelected)="onMarcaSelection($event.option.value, true)" #marcaauto="matAutocomplete" [displayWith]="getOptionText">
+                      <mat-option *ngFor="let marca of filteredMarcas" [value]="marca">
+                        {{marca.desc}}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>
+                        <span *ngIf="vehicleForm?.controls.marca.errors?.required">Seleccione una marca.</span>
+                    </mat-error>
+                </mat-form-field>
+    
+                <mat-form-field>
+                    <mat-label>Año</mat-label>
+                    <mat-select (selectionChange)="onYearSelection($event)" formControlName="fecha">
+                      <mat-option *ngFor="let year of years" [value]="year">
+                        {{year}}
+                      </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <span *ngIf="vehicleForm?.controls.fecha.errors?.required">Seleccione un año.</span>
+                    </mat-error>
+                  </mat-form-field>
+    
+                <mat-form-field *ngIf="filteredModelos.length; else modeloInput">
+                    <input type="text"
+                           placeholder="Modelo"
+                           matInput
+                           formControlName="modelo"
+                           [matAutocomplete]="modeloauto"
+                           (input)="filterElement($event.target.value, 'modelo')"
+                           (blur)="checkSelection($event.target.value, 'model')">
+                    <mat-autocomplete (optionSelected)="onModelSelection($event.option.value, true)" #modeloauto="matAutocomplete">
+                      <mat-option *ngFor="let modelo of filteredModelos" [value]="modelo">
+                        {{modelo}}
+                      </mat-option>
+                    </mat-autocomplete>
+                    <mat-error>
+                        <span *ngIf="vehicleForm?.controls.modelo.errors?.required">Seleccione un modelo.</span>
+                    </mat-error>
+                </mat-form-field>
+            
+                <ng-template #modeloInput>
+                    <mat-form-field >
+                        <mat-label>Modelo</mat-label>
+                        <input autocomplete="new-mod" (blur)="onModelFreeSelection($event.target.value)" matInput placeholder="Modelo" formControlName="modelo">
+                        <mat-error>
+                            <span *ngIf="vehicleForm?.controls.modelo.errors?.required">Ingrese un modelo.</span>
+                        </mat-error>
+                    </mat-form-field>
+                </ng-template>
+    
+                <mat-form-field *ngIf="filteredVersiones.length; else versionInput">
+                    <input type="text"
+                           placeholder="Version"
+                           matInput
+                           formControlName="version"
+                           [matAutocomplete]="versionauto"
+                           (input)="filterElement($event.target.value, 'version')">
+                    <mat-autocomplete (optionSelected)="onVersionSelection($event.option.value)" #versionauto="matAutocomplete" [displayWith]="getVersionText">
+                      <mat-option *ngFor="let version of filteredVersiones" [value]="version">
+                        {{version.desc}}
+                      </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+    
+                <ng-template #versionInput>
+                    <mat-form-field>
+                        <mat-label>Versión</mat-label>
+                        <input autocomplete="new-ver" matInput placeholder="Versión" formControlName="version">
+                        <mat-error>
+                            <span *ngIf="vehicleForm?.controls.version.errors?.required">Ingrese una versión.</span>
+                        </mat-error>
+                    </mat-form-field>
+                </ng-template>
+            </div>
         </div>
-    </div>
-    <div class="buttons-container mt20">
-        <button mat-flat-button type="button" color="accent" (click)="onReturn()">Regresar</button>
-        <button mat-flat-button type="submit" color="primary">Siguiente</button>
-    </div>
-</form>
+        <div class="buttons-container mt20">
+            <button mat-flat-button type="button" color="accent" (click)="onReturn()">Regresar</button>
+            <button mat-flat-button type="submit" color="primary">Siguiente</button>
+        </div>
+    </form>
+</div>

@@ -41,7 +41,7 @@ $mercantilandina-theme: mat-light-theme($mercantilandina-primary, $mercantilandi
 @include angular-material-theme($mercantilandina-theme);
 
 
-html, body { height: 100%; }
+html, body { height: auto; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .flex-container {

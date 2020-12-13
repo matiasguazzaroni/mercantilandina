@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Marca } from 'src/app/models/marca/marca';
 import { MercantilService } from 'src/app/services/mercantil/mercantil.service';
@@ -6,6 +6,7 @@ import { Validators } from '@angular/forms';
 import { UtilsfunctionsService } from 'src/app/services/utils/utilsfunctions.service';
 import { Version } from 'src/app/models/version/version';
 import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
+import { ShareService } from 'src/app/services/shareService/share-service.service';
 
 @Component({
   selector: 'app-vehicle-data',
@@ -14,6 +15,7 @@ import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
 })
 export class VehicleDataComponent implements OnInit {
   
+  @Input('fireInit') fireInit: boolean;
   @Output('onNext') onNext = new EventEmitter(); 
   @Output('onBefore') onBefore = new EventEmitter(); 
   marcas: Array<Marca> = new Array();
@@ -36,20 +38,31 @@ export class VehicleDataComponent implements OnInit {
 
   static keyformstorage = 'vehicledata';
 
-  constructor(private mercantilApi: MercantilService, private fb: FormBuilder, private utils: UtilsfunctionsService) { }
+  constructor(private mercantilApi: MercantilService, private fb: FormBuilder, private utils: UtilsfunctionsService, private shareService: ShareService) { }
 
   ngOnInit(): void {
+    const form_info = this.shareService.getKeyData(VehicleDataComponent.keyformstorage);
     this.vehicleForm = this.fb.group({
-      marca: ['', [Validators.required]],
-      fecha: [{value: '', disabled: true}, [Validators.required]],
-      modelo: [{value: '', disabled: true}, [Validators.required]],
-      version: [{value: '', disabled: true}]
+      marca: [form_info?.marca, [Validators.required]],
+      fecha: [{value: form_info?.fecha, disabled: true}, [Validators.required]],
+      modelo: [{value: form_info?.modelo, disabled: true}, [Validators.required]],
+      version: [{value: form_info?.version, disabled: true}]
     });
 
-    this.mercantilApi.getMarcas().subscribe( (data: Array<Marca>) => {
-      this.marcas = data;
-      this.filteredMarcas = this.utils.sortArray(data, 'desc');
-    })
+    if (form_info) {
+      this.onMarcaSelection(form_info.marca, false);
+      this.onModelSelection(form_info.modelo, false);
+      this.onVersionSelection(form_info.version);
+      this.utils.enableControl(this.vehicleForm.get('modelo'));
+      this.utils.enableControl(this.vehicleForm.get('version'));
+    }
+
+    if (this.fireInit) {
+      this.mercantilApi.getMarcas().subscribe( (data: Array<Marca>) => {
+        this.marcas = data;
+        this.filteredMarcas = this.utils.sortArray(data, 'desc');
+      })
+    }
   }
 
   public filterElement(element: string, key: string): void {
@@ -58,50 +71,63 @@ export class VehicleDataComponent implements OnInit {
     } 
     
     if (key === 'modelo') {
-      if (element === '')
-        this.utils.clearControl(this.vehicleForm.get('modelo'));
       this.filteredModelos = this.utils.filterArray(this.modelos, element);
     } 
 
     if (key === 'version') {
-      if (element === '') 
-        this.utils.clearControl(this.vehicleForm.get('direccion').get('domicilio'));
-      this.filteredVersiones = this.utils.filterArray(this.versiones, element);
+      this.filteredVersiones = this.utils.filterArray(this.versiones, element, 'desc');
     }
   }
 
-  public onMarcaSelection(marca: Marca): void {
+  public onMarcaSelection(marca: Marca, reset?: boolean): void {
     this.utils.enableControl(this.vehicleForm.get('fecha'));
+    if (reset) this.resetForm();
     this.selectedDropdown.marca = marca;
-    if (this.vehicleForm.get('fecha').value && this.vehicleForm.get('fecha').valid) {
-      this.getModelos(marca, this.vehicleForm.get('fecha').value);
-    }
   }
 
-  public onModelSelection(model: string): void {
+  public onModelSelection(model: string, reset?: boolean): void {
     this.utils.enableControl(this.vehicleForm.get('version'));
     this.selectedDropdown.modelo = model;
     this.mercantilApi
     .getVersiones(this.selectedDropdown.marca.codigo, this.vehicleForm.get('fecha').value, model)
     .subscribe( (versiones: Array<Version>) => {
-      console.log(versiones);
-      this.versiones = versiones;
-      this.filteredVersiones = this.utils.sortArray(versiones, 'desc');
-      this.utils.enableControl(this.vehicleForm.get('version'));
+      if (versiones.length) {
+        this.versiones = versiones;
+        this.filteredVersiones = this.utils.sortArray(versiones, 'desc');
+        if (reset) this.vehicleForm.get('version').setValue(null);
+        this.utils.enableControl(this.vehicleForm.get('version'));
+      }
     });
   }
 
-  public onVersionSelection(version: string): void {
+  public onVersionSelection(version: Version): void {
     this.selectedDropdown.version = version;
   }
 
   public onYearSelection($event): void {
     if (this.selectedDropdown.marca && this.vehicleForm.get('fecha').valid) {
+      this.vehicleForm.get('modelo').setValue(null);
+      this.vehicleForm.get('version').setValue(null);
       this.getModelos(this.selectedDropdown.marca.codigo, this.vehicleForm.get('fecha').value);
     }
   }
 
-  public getModelos(marca: Marca, fecha: string) {
+  public onModelFreeSelection(value: string): void {
+    if (value != '') {
+      this.utils.enableControl(this.vehicleForm.get('version'));
+      this.filteredVersiones = [];
+    } else {
+      this.utils.clearControl(this.vehicleForm.get('version'));
+    }
+  }
+
+  public resetForm(): void {
+    this.vehicleForm.get('fecha').setValue(null);
+    this.utils.clearControl(this.vehicleForm.get('modelo'));
+    this.utils.clearControl(this.vehicleForm.get('version'));
+  }
+
+  public getModelos(marca: number, fecha: string) {
     this.mercantilApi.getModelos(marca.toString(), fecha).subscribe( (data: Array<string>) => {
       this.modelos = data;
       this.filteredModelos = this.utils.sortArray(data);
@@ -109,7 +135,7 @@ export class VehicleDataComponent implements OnInit {
     })
   }
 
-  public getOptionText(marca: Marca): string | null{
+  public getOptionText(marca: Marca): string | null {
     return (marca) ? marca.desc : null;
   }
 
@@ -132,28 +158,20 @@ export class VehicleDataComponent implements OnInit {
 
   public checkSelection(value: string, variable: string): void {
     if (variable === 'marca') {
-      if (value === '') {
-        if (this.selectedDropdown.marca) {
-          this.vehicleForm.get('marca').setValue(this.selectedDropdown.marca);
-        } else {
-          this.vehicleForm.get('marca').setValue(null);
-        }
-      } else {
-        if (this.vehicleForm.get('marca').value.codigo !== undefined) {
-          if (this.selectedDropdown.marca) {
-            this.vehicleForm.get('marca').setValue(this.selectedDropdown.marca);
-          } else {
-            this.vehicleForm.get('marca').setValue(null);
-          }
-        } else {
-          this.vehicleForm.get('marca').setValue(null);
-        }
+      if (!this.selectedDropdown.marca || this.selectedDropdown.marca !== this.vehicleForm.get('marca').value) {
+        this.vehicleForm.get('marca').setValue(null);
+        this.selectedDropdown.marca = null;
+        this.filteredMarcas = this.marcas;
+        this.utils.clearControl(this.vehicleForm.get('fecha'));
+        this.resetForm();
       }
     } 
 
     if (variable === 'model') {
       if (!this.selectedDropdown.modelo || (this.selectedDropdown.modelo !== this.vehicleForm.get('modelo').value)) {
         this.vehicleForm.get('modelo').setValue(null);
+        this.selectedDropdown.modelo = null;
+        this.filteredModelos = this.modelos;
       }
     }
   }

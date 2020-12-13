@@ -1,8 +1,8 @@
-<mat-horizontal-stepper linear #stepper>
-    <mat-step *ngFor="let step of steps; let i = index">
+<mat-horizontal-stepper #stepper>
+    <mat-step [completed]="step.completed" *ngFor="let step of steps; let i = index">
         <ng-template matStepLabel>{{step.title}}</ng-template>
+        <div><!-- *ngIf="i === currentIndex"-->
             <ng-container #currentcomponent *ngComponentOutlet="step.component"></ng-container>
-            <!-- <div *ngIf="currentIndex == i"> -->
-
+        </div>
     </mat-step>
 </mat-horizontal-stepper>
