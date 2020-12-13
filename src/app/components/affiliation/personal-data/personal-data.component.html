@@ -161,7 +161,7 @@
             <mat-form-field>
                 <mat-label>Contraseña</mat-label>
                 <input [type]="hide ? 'password' : 'text'" autocomplete="new-pass" matInput placeholder="Contraseña" formControlName="password">
-                <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <mat-icon style="cursor: pointer;" matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                 <mat-error>
                     <div *ngIf="personalForm?.controls.password?.errors?.required">Ingrese una contraseña.</div>
                     <div *ngIf="personalForm?.controls.password?.errors?.notAllowedPassword">Ingrese una contraseña más fuerte.</div>

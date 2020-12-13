@@ -131,3 +131,7 @@ mat-error div {
         display: none !important;
     }
 }
+
+.mat-horizontal-stepper-header{
+    pointer-events: none !important;
+}

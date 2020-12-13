@@ -133,8 +133,6 @@ export class PersonalDataComponent implements OnInit {
       if (this.filteredProvincias.length === 0) {
         this.filteredProvincias = this.provincias;
       }
-
-      console.log(this.filteredProvincias)
     } 
 
     if (key === 'municipio') {

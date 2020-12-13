@@ -30,10 +30,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { environment } from 'src/environments/environment';
 import { SuccessComponent } from './components/success/success/success.component';
 import { SpinnerComponent } from './components/shared/spinner/spinner/spinner.component';
+import { SnackbarComponent } from './components/shared/snackbar/snackbar/snackbar.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -48,7 +51,8 @@ import { SpinnerComponent } from './components/shared/spinner/spinner/spinner.co
     PasswordStrengthMeterComponent,
     DocumentoPipe,
     SuccessComponent,
-    SpinnerComponent
+    SpinnerComponent,
+    SnackbarComponent
   ],
   imports: [
     BrowserModule,
@@ -65,7 +69,9 @@ import { SpinnerComponent } from './components/shared/spinner/spinner/spinner.co
     MatCardModule,
     HttpClientModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'es-AR'}, 

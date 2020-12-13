@@ -4,6 +4,8 @@ import { Cobertura } from '../../../models/cobertura/cobertura';
 import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
 import { UtilsfunctionsService } from 'src/app/services/utils/utilsfunctions.service';
 import { ShareService } from 'src/app/services/shareService/share-service.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarComponent } from '../../shared/snackbar/snackbar/snackbar.component';
 
 @Component({
   selector: 'app-coverage-data',
@@ -22,7 +24,7 @@ export class CoverageDataComponent implements OnInit {
 
   static keyformstorage = 'coveragedata';
 
-  constructor(private mocksService: MockmercantilService, private utils: UtilsfunctionsService, private shareService: ShareService) { }
+  constructor(private mocksService: MockmercantilService, private utils: UtilsfunctionsService, private shareService: ShareService, private _snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     const form_info = this.shareService.getKeyData(CoverageDataComponent.keyformstorage);
@@ -30,7 +32,6 @@ export class CoverageDataComponent implements OnInit {
     if (this.fireInit) {
       this.mocksService.getCoberturas().subscribe( (data: Array<Cobertura>) => {
         this.coberturas = this.utils.sortArray(data, 'puntaje', true);
-        console.log("coberturas:: ", data);
         if (form_info) {
           this.coberturaSeleccionada = form_info;
           const index = this.coberturas.findIndex( (cobertura) => { return cobertura.numero === this.coberturaSeleccionada.numero })
@@ -66,7 +67,11 @@ export class CoverageDataComponent implements OnInit {
       }
       this.onNext.emit(dataHandler)
     } else { //show error
-
+      this._snackBar.openFromComponent(SnackbarComponent,  {
+        data: 'Seleccione una cobertura',
+        duration: 2000,
+        panelClass: 'center'
+      });
     }
   }
 
