@@ -9,7 +9,7 @@
                        formControlName="marca"
                        [matAutocomplete]="marcaauto"
                        (input)="filterElement($event.target.value, 'marca')"
-                       (blur)="checkSelection('marca')">
+                       (blur)="checkSelection($event.target.value, 'marca')">
                 <mat-autocomplete (optionSelected)="onMarcaSelection($event.option.value)" #marcaauto="matAutocomplete" [displayWith]="getOptionText">
                   <mat-option *ngFor="let marca of filteredMarcas" [value]="marca">
                     {{marca.desc}}
@@ -22,18 +22,15 @@
 
             <mat-form-field>
                 <mat-label>Año</mat-label>
-                <input (dateChange)="onDateChange($event)" matInput [matDatepicker]="dpfecha" formControlName="fecha">
-                <mat-datepicker-toggle matSuffix [for]="dpfecha"></mat-datepicker-toggle>
-                <mat-datepicker #dpfecha></mat-datepicker>
+                <mat-select (selectionChange)="onYearSelection($event)" formControlName="fecha">
+                  <mat-option *ngFor="let year of years" [value]="year">
+                    {{year}}
+                  </mat-option>
+                </mat-select>
                 <mat-error>
-                    <span *ngIf="vehicleForm?.controls.fecha?.errors?.required">Ingrese el año.</span>
-                    <span *ngIf="vehicleForm?.controls.fecha?.errors?.notAllowedAge">
-                        <span *ngIf="vehicleForm.controls.fecha.errors.notAllowedAge.requiredMaxAge">
-                            La fecha debe ser entre {{vehicleForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMinAge}} y {{vehicleForm.controls.fechaNacimiento.errors.notAllowedAge.requiredMaxAge}} .
-                        </span>
-                    </span>
+                    <span *ngIf="vehicleForm?.controls.fecha.errors?.required">Seleccione un año.</span>
                 </mat-error>
-            </mat-form-field>
+              </mat-form-field>
 
             <mat-form-field>
                 <input type="text"
@@ -41,8 +38,8 @@
                        matInput
                        formControlName="modelo"
                        [matAutocomplete]="modeloauto"
-                       (input)="filterElement($event.target.value, 'model')"
-                       (blur)="checkSelection('model')">
+                       (input)="filterElement($event.target.value, 'modelo')"
+                       (blur)="checkSelection($event.target.value, 'model')">
                 <mat-autocomplete (optionSelected)="onModelSelection($event.option.value)" #modeloauto="matAutocomplete">
                   <mat-option *ngFor="let modelo of filteredModelos" [value]="modelo">
                     {{modelo}}
@@ -55,18 +52,21 @@
         
             <mat-form-field>
                 <input type="text"
-                       placeholder="Versiones"
+                       placeholder="Version"
                        matInput
                        formControlName="version"
                        [matAutocomplete]="versionauto"
-                       (input)="filterElement($event.target.value, 'version')"
-                       (blur)="checkSelection('version')">
-                <mat-autocomplete (optionSelected)="onVersionSelection($event.option.value)" #versionauto="matAutocomplete">
+                       (input)="filterElement($event.target.value, 'version')">
+                <mat-autocomplete (optionSelected)="onVersionSelection($event.option.value)" #versionauto="matAutocomplete" [displayWith]="getVersionText">
                   <mat-option *ngFor="let version of filteredVersiones" [value]="version">
-                    {{version}}
+                    {{version.desc}}
                   </mat-option>
                 </mat-autocomplete>
             </mat-form-field>
         </div>
+    </div>
+    <div class="buttons-container mt20">
+        <button mat-flat-button type="button" color="accent" (click)="onReturn()">Regresar</button>
+        <button mat-flat-button type="submit" color="primary">Siguiente</button>
     </div>
 </form>

@@ -1,1 +1,121 @@
-<p>resume works!</p>
+<div>
+    <div class="flex-container">
+        <div class="flex-content mt20">
+            <p class="title">Información personal</p>
+            <div>
+                <span>Dni: </span>
+                <span>{{resume_info.personaldata.dni | document}}</span>
+            </div>
+            
+            <div>
+                <span>Nombre: </span>
+                <span>{{resume_info.personaldata.nombre}}</span>
+            </div>
+
+            <div>
+                <span>Apellido: </span>
+                <span>{{resume_info.personaldata.apellido}}</span>
+            </div>
+            
+            <div>
+                <span>Fecha de nacimiento: </span>
+                <span>{{resume_info.personaldata.fechaNacimiento | date:'dd/MM/yyyy'}}</span>
+            </div>
+            
+            <div>
+                <span>Usuario: </span>
+                <span>{{resume_info.personaldata.usuario}}</span>
+            </div>
+        </div>
+        <div class="flex-content mt20">
+            <p class="title">Dirección</p>
+            <div>
+                <span>Provincia: </span>
+                <span>{{resume_info.personaldata.direccion.provincia.nombre}}</span>
+            </div>
+
+            <div>
+                <span>Ciudad: </span>
+                <span>{{resume_info.personaldata.direccion.ciudad.nombre}}</span>
+            </div>
+
+            <div>
+                <span>Domicilio: </span>
+                <span>{{resume_info.personaldata.direccion.domicilio}}</span>
+            </div>
+        </div>
+        <div class="flex-content mt20">
+            <p class="title">Contacto</p>
+            <div>
+                <span>Email: </span>
+                <span>{{resume_info.personaldata.email}}</span>
+            </div>
+            
+            <div>
+                <span>Teléfono: </span>
+                <span>{{resume_info.personaldata.telefono}}</span>
+            </div>
+            
+            <div>
+                <span>Celular: </span>
+                <span>{{resume_info.personaldata.celular}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="flex-container mt30">
+        <div class="flex-content mt20">
+            <p class="title">Información del vehículo</p>
+            
+            <div>
+                <span>Marca: </span>
+                <span>{{resume_info.vehicledata.marca.desc}}</span>
+            </div>
+            
+            <div>
+                <span>Año: </span>
+                <span>{{resume_info.vehicledata.fecha}}</span>
+            </div>
+
+            <div>
+                <span>Modelo: </span>
+                <span>{{resume_info.vehicledata.modelo}}</span>
+            </div>
+
+            <div *ngIf="resume_info.vehicledata.version">
+                <span>Version: </span>
+                <span>{{resume_info.vehicledata.version.desc}}</span>
+            </div>
+
+        </div>
+
+        <div class="flex-content mt20">
+            <p class="title">Cobertura</p>
+            
+            <div>
+                <span>Título: </span>
+                <span>{{resume_info.coveragedata.titulo}}</span>
+            </div>
+            
+            <div>
+                <span>Descripción: </span>
+                <span>{{resume_info.coveragedata.texto}}</span>
+            </div>
+
+            <div>
+                <span>Costo: </span>
+                <span>{{resume_info.coveragedata.costo | number}}</span>
+            </div>
+
+            <div *ngIf="resume_info.coveragedata.granizo">
+                <span>Granizo: </span>
+                <span>Covertura</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="buttons-container mt30">
+        <button mat-flat-button type="button" color="accent" (click)="onReturn()">Regresar</button>
+        <button mat-flat-button type="submit" color="primary" (click)="onConfirm()">Confirmar</button>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+@import '../../../../scss/colors';
+.coverage-container .mat-card {
+    display:flex;
+    flex-direction: column;
+    flex: 1 1 25%; 
+    margin: 15px;
+}
+  
+.coverage-container .mat-card-header {
+    flex-shrink: 0;
+}
+
+.coverage-container .mat-card-content{
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.cards-container {
+    display: flex; 
+    flex-direction: row; 
+    flex-wrap: wrap;
+}
+
+.rating {
+    font-size: 30px;
+    background: $primary-color-degraded;
+    color: $primary-color;
+    text-align: center;
+    line-height: 40px;
+}
+
+.selected {
+    border: 2px solid $primary-color;
+}
+
+.helper {
+    background: $primary-color-degraded;
+    color: $primary-color;
+    display: inline;
+    padding: 4px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.content-sublist span {
+    width: 30%;
+    display: inline-block;
+}
+
+@media(max-width: 767px) {
+    .coverage-container .mat-card {
+        flex: 1 1 100%; 
+        margin: 0px;
+        margin-top: 20px;
+    }   
+
+    .coverage-container .mat-card:first-child {
+        margin-top: 0px;
+    } 
+}

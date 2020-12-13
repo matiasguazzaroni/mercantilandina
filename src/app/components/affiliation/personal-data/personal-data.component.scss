@@ -1,3 +1,9 @@
 .bottom-container {
     width: 50%;
 }
+
+@media(max-width: 767px) {
+    .bottom-container {
+        width: 100%;
+    }
+}

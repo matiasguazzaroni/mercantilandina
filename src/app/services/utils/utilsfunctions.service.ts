@@ -25,13 +25,53 @@ export class UtilsfunctionsService {
         if (elem[property].toLowerCase().indexOf(stringToFind.toLowerCase()) != -1) 
           return true;
         return false;
+      }).sort( (a: any, b: any) => {
+        if (a[property] > b[property]) return 1;
+        if (a[property] < b[property]) return -1;
+        return 0;
       })
     } else {
       return arrayToFilter.filter( (elem: string) => {
         if (elem.toLowerCase().indexOf(stringToFind.toLowerCase()) != -1) 
           return true;
         return false;
+      }).sort( (a: string, b:string) => {
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
       })
+    }
+  }
+
+  public sortArray(arrayToSort: Array<any>, property?: any, asc?: boolean): Array<any> {
+    if (!asc) {
+      if (property) {
+        return arrayToSort.sort( (a: any, b: any) => {
+          if (a[property] > b[property]) return 1;
+          if (a[property] < b[property]) return -1;
+          return 0;
+        })
+      } else {
+        return arrayToSort.sort( (a: string, b:string) => {
+          if (a > b) return 1;
+          if (a < b) return -1;
+          return 0;
+        })
+      }
+    } else {
+      if (property) {
+        return arrayToSort.sort( (a: any, b: any) => {
+          if (a[property] < b[property]) return 1;
+          if (a[property] > b[property]) return -1;
+          return 0;
+        })
+      } else {
+        return arrayToSort.sort( (a: string, b:string) => {
+          if (a < b) return 1;
+          if (a > b) return -1;
+          return 0;
+        })
+      }
     }
   }
 

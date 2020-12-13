@@ -1,0 +1,10 @@
+.wrapper-spinner {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    height: calc(100vh - 20px);
+}
+  
+.inner-spinner {
+    padding: 12px;
+}

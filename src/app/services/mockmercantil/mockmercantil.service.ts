@@ -11,4 +11,8 @@ export class MockmercantilService {
   checkUserAvailability(username: string) {
     return this.http.get(`${this.baseUrl}/usuarios?nombre=${username}`);
   }
+
+  getCoberturas() {
+    return this.http.get(`${this.baseUrl}/coberturas`);
+  }
 }

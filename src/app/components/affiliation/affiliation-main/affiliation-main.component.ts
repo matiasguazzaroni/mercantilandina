@@ -5,6 +5,7 @@ import { PersonalDataComponent } from '../personal-data/personal-data.component'
 import { ResumeComponent } from '../resume/resume.component';
 import { VehicleDataComponent } from '../vehicle-data/vehicle-data.component';
 import { StepperComponent } from '../../shared/stepper/stepper.component';
+import { SuccessComponent } from '../../success/success/success.component';
 
 @Component({
   selector: 'app-affiliation-main',
@@ -25,6 +26,9 @@ export class AffiliationMainComponent implements OnInit {
   }, {
     component: ResumeComponent,
     title: 'Resumen'
+  }, {
+    component: SuccessComponent,
+    title: 'Finalización'
   }]
 
   @ViewChild('stepperwizard') stepperComponent: StepperComponent;
@@ -32,9 +36,5 @@ export class AffiliationMainComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit(): void {
-    console.log("stepperwizard ", this.stepperComponent.getStepper.steps)
   }
 }

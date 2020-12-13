@@ -8,13 +8,27 @@
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
 @include mat-core();
+@import '../src/scss/colors';
+
+$primary: (
+    500: $primary-color,
+    contrast: (
+        500: $primary-contrast
+    )
+);
+
+$secondary: (
+    500: $secondary-color,
+    contrast: (
+        500: $primary-contrast
+    )
+);
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$mercantilandina-primary: mat-palette($mat-indigo);
-$mercantilandina-accent: mat-palette($mat-pink, A200, A100, A400);
-
+$mercantilandina-primary: mat-palette($primary);
+$mercantilandina-accent: mat-palette($secondary);
 // The warn palette is optional (defaults to red).
 $mercantilandina-warn: mat-palette($mat-red);
 
@@ -40,14 +54,38 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     padding:0 15px !important;
 }
 
+.flex-content {
+    flex: 1 1 auto;
+    padding:0 15px !important;
+}
+
+.flex-content div {
+    margin-top: 10px;
+}
+
+.flex-content div span {
+    width: 50%;
+    float: left;
+    margin-top: 5px;
+}
+
 .buttons-container {
     text-align: right;
+}
+
+.buttons-container>button {
+    margin-right: 20px;
 }
 
 .title {
     font-weight: 500;
     font-size: 17px;
     color: #0074ad;
+    margin-bottom: 5px !important;
+}
+
+.mt30 {
+    margin-top: 30px !important;
 }
 
 .mt20 {
@@ -64,4 +102,32 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .form mat-form-field {
     width: 100%;
+}
+
+.center {
+    text-align: center;
+}
+
+mat-error div {
+    margin-bottom: 2px;
+}
+
+@media(max-width: 767px) {
+    .flex-container {
+        display:flex;
+        flex-direction: column;
+        flex: 1 1 100%; 
+    }
+
+    .flex-content, .left-container, .right-container {
+        padding: 0 !important;
+    }
+
+    .noPaddingMobile {
+        padding: 0 !important;
+    }
+
+    .mat-step-label {
+        display: none !important;
+    }
 }

@@ -14,7 +14,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PasswordStrengthMeterComponent } from './components/shared/password-strength-meter/password-strength-meter.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { DocumentoPipe } from '../app/pipes/documento.pipe'
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { InterceptorService } from '../app/services/interceptor/interceptor.service';
 
 /*Angular Material Components */
 import { MatStepperModule } from '@angular/material/stepper';
@@ -24,8 +26,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { environment } from 'src/environments/environment';
+import { SuccessComponent } from './components/success/success/success.component';
+import { SpinnerComponent } from './components/shared/spinner/spinner/spinner.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +45,10 @@ import { environment } from 'src/environments/environment';
     AffiliationMainComponent,
     StepperComponent,
     FooterComponent,
-    PasswordStrengthMeterComponent
+    PasswordStrengthMeterComponent,
+    DocumentoPipe,
+    SuccessComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -50,7 +61,11 @@ import { environment } from 'src/environments/environment';
     ReactiveFormsModule,
     MatDatepickerModule,
     MatButtonModule,
-    HttpClientModule
+    MatSelectModule,
+    MatCardModule,
+    HttpClientModule,
+    MatIconModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     {provide: MAT_DATE_LOCALE, useValue: 'es-AR'}, 
@@ -58,7 +73,12 @@ import { environment } from 'src/environments/environment';
     {provide: MAT_DATE_FORMATS, useValue: MAT_MOMENT_DATE_FORMATS},
     {provide: 'API_MA_URL', useValue: environment.base_mercantilandina_url},
     {provide: 'API_MOCK_URL', useValue: environment.base_apimock_url},
-    {provide: 'API_GEO_URL', useValue: environment.base_georef_url}
+    {provide: 'API_GEO_URL', useValue: environment.base_georef_url},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: InterceptorService,
+      multi: true,
+  }
   ],
   bootstrap: [AppComponent]
 })

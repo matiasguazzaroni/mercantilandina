@@ -13,6 +13,7 @@ import { MockmercantilService } from 'src/app/services/mockmercantil/mockmercant
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { UtilsfunctionsService } from 'src/app/services/utils/utilsfunctions.service';
+import { FormHandlerData } from 'src/app/models/formHandler/formHandlerData';
 
 @Component({
   selector: 'app-personal-data',
@@ -24,7 +25,7 @@ export class PersonalDataComponent implements OnInit {
   @Output('onNext') onNext = new EventEmitter(); 
   personalForm: FormGroup;
   lettersRegex: RegExp = /^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff\s ]*)$/;
-  numbersRegex: RegExp = /^[0-9]*$/;
+  dniRegex: RegExp = /^(\d{2}\.{1}\d{3}\.\d{3})|(\d{2}\s{1}\d{3}\s\d{3})$/;
   noFirstBlankSpace: RegExp = /^\S.*$/;
   noWhiteSpace = /^\S*$/;
 
@@ -37,17 +38,20 @@ export class PersonalDataComponent implements OnInit {
 
   usernameCheck = new Subject<string>();
   userExists: boolean = false;
+  hide: boolean = true;
 
   selectedDropdown = {
     'province': null,
     'city': null
   }
 
+  static keyformstorage = 'personaldata';
+
   constructor(private fb: FormBuilder, private georefService: GeorefService, private mocksService: MockmercantilService, private utils: UtilsfunctionsService) { }
 
   ngOnInit(): void {
     this.personalForm = this.fb.group({
-      dni: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(8), regexValidator(this.numbersRegex)]],
+      dni: ['', [Validators.required, Validators.maxLength(10), regexValidator(this.dniRegex)]],
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
       apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(15), regexValidator(this.lettersRegex), regexValidator(this.noFirstBlankSpace)]],
       email: ['', Validators.email],
@@ -65,7 +69,7 @@ export class PersonalDataComponent implements OnInit {
 
     this.georefService.getProvincias().subscribe( (data: any) => {
       this.provincias = data.provincias;
-      this.filteredProvincias = this.provincias;
+      this.filteredProvincias = this.utils.sortArray(this.provincias, 'nombre');
     })
 
     this.usernameCheck.pipe(
@@ -91,7 +95,13 @@ export class PersonalDataComponent implements OnInit {
   }
 
   public onSubmit(form: FormGroup) : void {
-    (form.valid) ? this.onNext.emit(true) : null;
+    if (form.valid) {
+      const dataHandler: FormHandlerData = {
+        key: PersonalDataComponent.keyformstorage,
+        data: this.personalForm.value
+      }
+      this.onNext.emit(dataHandler)
+    }
   }
 
   public filterElement(element: string, key: string): void {
@@ -99,12 +109,20 @@ export class PersonalDataComponent implements OnInit {
       if (element === '')
         this.utils.clearControl(this.personalForm.get('direccion').get('ciudad'));
       this.filteredProvincias = this.utils.filterArray(this.provincias, element, 'nombre');
+      if (this.filteredProvincias.length === 0) {
+        this.filteredProvincias = this.provincias;
+      }
+
+      console.log(this.filteredProvincias)
     } 
 
     if (key === 'municipio') {
       if (element === '') 
         this.utils.clearControl(this.personalForm.get('direccion').get('domicilio'));
       this.filteredMunicipios = this.utils.filterArray(this.municipios, element, 'nombre');
+      if (this.filteredMunicipios.length === 0) {
+        this.filteredMunicipios = this.municipios;
+      }
     }
   }
 
@@ -121,7 +139,7 @@ export class PersonalDataComponent implements OnInit {
     this.selectedDropdown.province = provincia.id;
     this.georefService.geMunicipios(provincia.id).subscribe( (data: any) => {
       this.municipios = data.municipios;
-      this.filteredMunicipios = this.municipios;
+      this.filteredMunicipios = this.utils.sortArray(this.municipios, 'nombre');
     })
   }
 
@@ -136,7 +154,7 @@ export class PersonalDataComponent implements OnInit {
         this.personalForm.get('direccion').get('provincia').setValue(null);
       }
     } else {
-      if (!this.selectedDropdown.city || this.selectedDropdown.city !== this.personalForm.get('direccion').get('provincia').value.id) {
+      if (!this.selectedDropdown.city || this.selectedDropdown.city !== this.personalForm.get('direccion').get('ciudad').value.id) {
         this.personalForm.get('direccion').get('ciudad').setValue(null);
       }
     }

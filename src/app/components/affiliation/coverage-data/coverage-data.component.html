@@ -1,1 +1,32 @@
-<p>coverage-data works!</p>
+<div class="coverage-container">
+    <div class="cards-container">
+        <mat-card *ngFor="let cobertura of coberturas; let i = index" [class.selected]="cobertura.selected">
+            <mat-card-header [style.height.px]="(cobertura.granizo === true) ? '130' : '110'">
+                <div mat-card-avatar class="rating">{{cobertura.puntaje}}</div>
+                <mat-card-title>{{cobertura.titulo}}</mat-card-title>
+                <mat-card-subtitle>{{cobertura.texto}}</mat-card-subtitle>
+                <mat-card-subtitle [class.helper]="cobertura.granizo">{{cobertura.granizo ? 'Granizo': null}}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+            <p>
+                {{cobertura.descripcion}}
+            </p>
+            <p class="content-sublist">
+                <span>Franquicia: </span><span>{{cobertura.franquicia}}</span>
+            </p>
+            <p class="content-sublist">
+                <span>Costo: </span><span>${{cobertura.costo | number}}</span>
+            </p>
+            </mat-card-content>
+            <mat-card-actions align="end">
+            <button mat-button (click)="selectCoverage(cobertura, i)">SELECCIONAR</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <div class="buttons-container mt20">
+        <button mat-flat-button type="button" color="accent" (click)="onReturn()">Regresar</button>
+        <button mat-flat-button type="submit" color="primary" (click)="onSubmit()">Siguiente</button>
+    </div>
+</div>
+
